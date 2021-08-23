@@ -9,6 +9,7 @@ if (process.env.NODE_ENV !== 'production') {
   const flash = require('express-flash')
   const session = require('express-session')
   const methodOverride = require('method-override')
+  const {Client} = require('pg')
   
   const initializePassport = require('./passport-config')
   initializePassport(
@@ -18,6 +19,15 @@ if (process.env.NODE_ENV !== 'production') {
   )
   
   const users = []
+
+ /*const client =new Client({
+        user: "postgres",
+        password: "myPassword",
+        host: "localhost",
+        port: "5432",
+        database: "volunteermanagement"
+  } )*/
+
   
   app.set('view-engine', 'ejs')
   app.use(express.urlencoded({ extended: false }))
@@ -35,38 +45,42 @@ if (process.env.NODE_ENV !== 'production') {
     res.render('index.ejs', { name: req.user.name })
   })
   
-  app.get('/login', checkNotAuthenticated, (req, res) => {
-    res.render('login.ejs')
+  app.get('/volunteer-login', checkNotAuthenticated, (req, res) => {
+    res.render('volunteer-login.ejs')
   })
   
-  app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+  app.post('/volunteer-login', checkNotAuthenticated, passport.authenticate('local', {
     successRedirect: '/',
-    failureRedirect: '/login',
+    failureRedirect: '/volunteer-login',
     failureFlash: true
   }))
   
-  app.get('/signup', checkNotAuthenticated, (req, res) => {
-    res.render('signup.ejs')
+  app.get('/volunteer-signup', checkNotAuthenticated, (req, res) => {
+    res.render('volunteer-signup.ejs')
+    /*client.connect()
+  .then(() => alert("Connected successfully"))
+  .catch(e => console.log(e))
+  .finally(() => client.end())  */
   })
   
-  app.post('/signup', checkNotAuthenticated, async (req, res) => {
+  app.post('/volunteer-signup', checkNotAuthenticated, async (req, res) => {
     try {
       const hashedPassword = await bcrypt.hash(req.body.password, 10)
       users.push({
         id: Date.now().toString(),
-        name: req.body.name,
+        name: req.body.firstname,
         email: req.body.email,
         password: hashedPassword
       })
-      res.redirect('/login')
+      res.redirect('/volunteer-login')
     } catch {
-      res.redirect('/signup')
+      res.redirect('/volunteer-signup')
     }
   })
   
   app.delete('/logout', (req, res) => {
     req.logOut()
-    res.redirect('/login')
+    res.redirect('/volunteer-login')
   })
   
   function checkAuthenticated(req, res, next) {
@@ -74,13 +88,9 @@ if (process.env.NODE_ENV !== 'production') {
       return next()
     }
   
-    res.redirect('/login')
+    res.redirect('/volunteer-login')
   }
 
-  app.get('/testbootstrap',  (req, res) => {
-    res.render('testbootstrap.ejs')
-  })
-  
   function checkNotAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
       return res.redirect('/')
