@@ -9,7 +9,7 @@ if (process.env.NODE_ENV !== 'production') {
   const flash = require('express-flash')
   const session = require('express-session')
   const methodOverride = require('method-override')
-  const {Client} = require('pg')
+  const Pool = require('pg').Pool
   
   const initializePassport = require('./passport-config')
   initializePassport(
@@ -20,13 +20,13 @@ if (process.env.NODE_ENV !== 'production') {
   
   const users = []
 
- /*const client =new Client({
-        user: "postgres",
-        password: "myPassword",
+ const pool =new Pool({
+        user: "vms_prod",
+        password: "vms_prod",
         host: "localhost",
         port: "5432",
         database: "volunteermanagement"
-  } )*/
+  } )
 
   
   app.set('view-engine', 'ejs')
@@ -42,8 +42,23 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(methodOverride('_method'))
   
   app.get('/', checkAuthenticated, (req, res) => {
-    res.render('index.ejs', { name: req.user.name })
+   
+    res.render('index.ejs',{ name: req.user.name })
+    
   })
+  
+  app.get('/test',  (req, res) => {
+
+    const sql = 'SELECT * FROM vms.Volunteer'
+    pool.query(sql , [], (err, result) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log(result)
+      res.render('test.ejs', { model: result.rows });
+    });
+  });
+    
   
   app.get('/volunteer-login', checkNotAuthenticated, (req, res) => {
     res.render('volunteer-login.ejs')
@@ -57,10 +72,7 @@ if (process.env.NODE_ENV !== 'production') {
   
   app.get('/volunteer-signup', checkNotAuthenticated, (req, res) => {
     res.render('volunteer-signup.ejs')
-    /*client.connect()
-  .then(() => alert("Connected successfully"))
-  .catch(e => console.log(e))
-  .finally(() => client.end())  */
+
   })
   
   app.post('/volunteer-signup', checkNotAuthenticated, async (req, res) => {
@@ -72,6 +84,14 @@ if (process.env.NODE_ENV !== 'production') {
         email: req.body.email,
         password: hashedPassword
       })
+      const sqlInsert = 'INSERT INTO vms.Volunteer ("FirstName","LastName","EmailAddress","Password") VALUES ($1, $2, $3, $4)'
+      const volunteer = [req.body.firstname,req.body.lastname, req.body.email, hashedPassword ];
+      pool.query(sqlInsert, volunteer, (err, result) => {
+        if (err) {
+          return console.error(err.message);
+        }
+        //res.redirect("/volunteer-signup");
+      });
       res.redirect('/volunteer-login')
     } catch {
       res.redirect('/volunteer-signup')
