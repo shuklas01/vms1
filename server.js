@@ -10,6 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
   const session = require('express-session')
   const methodOverride = require('method-override')
   const Pool = require('pg').Pool
+
   
   const initializePassport = require('./passport-config')
   initializePassport(
@@ -68,7 +69,34 @@ if (process.env.NODE_ENV !== 'production') {
     successRedirect: '/',
     failureRedirect: '/volunteer-login',
     failureFlash: true
-  }))
+  })
+  )
+
+  /*app.post('/volunteer-login', checkNotAuthenticated, (req, res) => {
+    const hashedPassword1 = bcrypt.hash(req.body.password, 10)
+    const sql = 'SELECT "Password" as password FROM vms.Volunteer WHERE "EmailAddress" = $1'
+    pool.query(sql , [req.body.email], (err, result) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      if (result.rows.length>0)
+      {
+        console.log('password from db:' + result.rows[0].password)
+        console.log('password from ui:' + password)
+        try {
+          if ( bcrypt.compare(password, result.rows[0].password)) {
+            console.log('password is matching')
+          } else {
+            console.log('password is not matching')
+          }
+        } catch (e) {
+          console.log(e)
+        }
+      }
+      
+      res.render('volunteer-signup.ejs')
+    });
+   })*/
   
   app.get('/volunteer-signup', checkNotAuthenticated, (req, res) => {
     res.render('volunteer-signup.ejs')
