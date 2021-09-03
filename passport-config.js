@@ -11,7 +11,7 @@ const pool =new Pool({
 } )
 
 function initialize(passport, getUserByEmail, getUserById) {
-  const authenticateUser = async (email, password, done) => {
+  const authenticateUser =  (email, password, done) => {
     const users = []
     //const hashedPassword1 = await bcrypt.hash(password, 10)
     users.push({
@@ -23,11 +23,8 @@ function initialize(passport, getUserByEmail, getUserById) {
     if (user == null) {
       return done(null, false, { message: 'No user with that email' })
     }
-    //const user = email
-    console.log('In aythenticate method')
-    console.log('Email:'+email)
+
     const sql = 'SELECT "Password" as password FROM vms.Volunteer WHERE "EmailAddress" = $1'
-    var hashDbPwd = ''
     pool.query(sql , [email], (err, result) => {
       if (err) {
         return console.error(err.message);
@@ -36,24 +33,38 @@ function initialize(passport, getUserByEmail, getUserById) {
       {
         console.log('password from db:' + result.rows[0].password)
         console.log('password from ui:' + password)
-        hashDbPwd =  result.rows[0].password
+        bcrypt.compare(password, result.rows[0].password,(err,isValid)=> {
+          console.log('inside bcrypt')
+          if (err)
+             {console.log(err)}
+          else if (isValid)
+           {console.log('password matched')
+           return done(null, user)}
+          else {
+           console.log('password not matched')
+           return done(null, false, { message: 'Password incorrect' })
+         }
+       } 
+       );
 
       }
     });
 
-    
-     bcrypt.compare(password, hashDbPwd,(err,data)=> {
+    //hashDbPwd.toString().replace(/^\$2y/, "$2a")
+    console.log('test')
+     /*bcrypt.compare(password, hashDbPwd,(err,data)=> {
        console.log('inside bcrypt')
        if (err)
           {console.log(err)}
-       if (data)
+       else if (data)
         {console.log('password matched')
         return done(null, user)}
        else {
         console.log('password not matched')
         return done(null, false, { message: 'Password incorrect' })
       }
-    } );
+    } 
+    );*/
   }
 
   passport.use(new LocalStrategy({ usernameField: 'email' }, authenticateUser))
