@@ -42,9 +42,18 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(passport.session())
   app.use(methodOverride('_method'))
   
-  app.get('/', checkAuthenticated, (req, res) => {
+  app.get('/',  (req, res) => {
    
-    res.render('index.ejs',{ name: req.user.name })
+    res.render('main.ejs')
+    
+  })
+
+  app.post('/',  (req, res) => {
+   sess = req.session;
+   sess.entitytype = req.body.entitytype;
+   if (req.body.entitytype == 'Volunteer')
+   { res.render('volunteer-login.ejs') }
+    
     
   })
   
@@ -66,7 +75,7 @@ if (process.env.NODE_ENV !== 'production') {
   })
   
   app.post('/volunteer-login', checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/',
+    successRedirect: '/index',
     failureRedirect: '/volunteer-login',
     failureFlash: true
   })
@@ -112,14 +121,24 @@ if (process.env.NODE_ENV !== 'production') {
         email: req.body.email,
         password: hashedPassword
       })
-      const sqlInsert = 'INSERT INTO vms.Volunteer ("FirstName","LastName","EmailAddress","Password") VALUES ($1, $2, $3, $4)'
-      const volunteer = [req.body.firstname,req.body.lastname, req.body.email, hashedPassword ];
+      const sqlInsert = 'INSERT INTO vms.Volunteer ("FirstName","LastName","EmailAddress") VALUES ($1, $2, $3) RETURNING "Id"'
+      const volunteer = [req.body.firstname,req.body.lastname, req.body.email];
       pool.query(sqlInsert, volunteer, (err, result) => {
         if (err) {
           return console.error(err.message);
         }
+        else 
+        { var newlyCreatedUserId = result.rows[0].Id;
+          console.log("id created : "+newlyCreatedUserId)
+          const loginInfo = [newlyCreatedUserId, hashedPassword ];
+          const sqlLoginInfoInsert = 'INSERT INTO vms."LoginInfo" ("UserId","Password") VALUES ($1, $2)'
+          pool.query(sqlLoginInfoInsert, loginInfo, (err, result) => {
+            if (err) {
+              return console.error("Error while inserting into LoginInfo table :"+err.message);
+            }
+        })}
         //res.redirect("/volunteer-signup");
-      });
+    });
       res.redirect('/volunteer-login')
     } catch {
       res.redirect('/volunteer-signup')
