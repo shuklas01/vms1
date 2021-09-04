@@ -26,7 +26,8 @@ function initialize(passport, getUserByEmail, getUserById) {
     }
 
     //const sql = 'SELECT "Password" as password FROM vms.Volunteer WHERE "EmailAddress" = $1'
-    const sql = 'SELECT "Password" as password FROM vms."LoginInfo" as l inner join vms.Volunteer as v on l."UserId" = v."Id"  WHERE  "EmailAddress" = $1'
+    const sql = 'SELECT "Password" as password FROM vms.Volunteer WHERE  "EmailAddress" = $1 UNION SELECT "Password" as "password" FROM vms."nonprofit_org" WHERE  "EmailAddress" = $1'
+    //const sql = 'SELECT "Password" as password FROM vms."LoginInfo" as l inner join vms.Volunteer as v on l."UserId" = v."Id"  WHERE  "EmailAddress" = $1'
     pool.query(sql , [email], (err, result) => {
       if (err) {
         return console.error(err.message);
@@ -69,8 +70,9 @@ function initialize(passport, getUserByEmail, getUserById) {
     );*/
   }
 
-  passport.use(new LocalStrategy({ usernameField: 'email' , entitytypeField: 'entitytype'}, authenticateUser))
-  passport.serializeUser((user, done) => done(null, user.id))
+  passport.use(new LocalStrategy({ usernameField: 'email' }, authenticateUser))
+  passport.serializeUser((user, done) =>
+   done(null, user.id))
   //passport.serializeUser((user, done) => done(null, user))
   passport.deserializeUser((id, done) => {
     return done(null, id => users.find(user => user.id === id))
