@@ -36,7 +36,12 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: true,
+    unset: 'destroy',
+    name: 'session cookie name',
+    genid: (req) => {
+        // Returns a random string to be used as a session ID
+    }
   }))
   app.use(passport.initialize())
   app.use(passport.session())
@@ -51,10 +56,12 @@ if (process.env.NODE_ENV !== 'production') {
   app.post('/',  (req, res) => {
    sess = req.session;
    sess.entitytype = req.body.entitytype;
-   if (req.body.entitytype == 'Volunteer')
+   console.log("entitytype:"+req.body.entitytype)
+   if (req.body.entitytype == 'volunteer')
    { res.render('volunteer-login.ejs') }
-    
-    
+   else if (req.body.entitytype == 'nonprofitorg')
+   { res.render('nonprofit-org-login.ejs') }
+
   })
   
   app.get('/test',  (req, res) => {
@@ -69,43 +76,75 @@ if (process.env.NODE_ENV !== 'production') {
     });
   });
     
+  app.get('/volunteer',  (req, res) => {
+    if(!req.user) {
+      console.log("session"+req.user)
+    }
+    //console.log("inside volunteer"+req.user.name)
+    res.render('volunteer.ejs')
+  })
   
   app.get('/volunteer-login', checkNotAuthenticated, (req, res) => {
     res.render('volunteer-login.ejs')
   })
   
-  app.post('/volunteer-login', checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/index',
+  app.post('/volunteer-login',checkNotAuthenticated, passport.authenticate('local', {
+    successRedirect: '/volunteer',
     failureRedirect: '/volunteer-login',
     failureFlash: true
   })
   )
 
-  /*app.post('/volunteer-login', checkNotAuthenticated, (req, res) => {
-    const hashedPassword1 = bcrypt.hash(req.body.password, 10)
-    const sql = 'SELECT "Password" as password FROM vms.Volunteer WHERE "EmailAddress" = $1'
-    pool.query(sql , [req.body.email], (err, result) => {
-      if (err) {
-        return console.error(err.message);
-      }
-      if (result.rows.length>0)
-      {
-        console.log('password from db:' + result.rows[0].password)
-        console.log('password from ui:' + password)
-        try {
-          if ( bcrypt.compare(password, result.rows[0].password)) {
-            console.log('password is matching')
-          } else {
-            console.log('password is not matching')
-          }
-        } catch (e) {
-          console.log(e)
+  app.get('/nonprofit-org-login', checkNotAuthenticated, (req, res) => {
+    res.render('nonprofit-org-login.ejs')
+  })
+  
+  app.post('/nonprofit-org-login', checkNotAuthenticated, passport.authenticate('local', {
+    successRedirect: '/volunteer',
+    failureRedirect: '/nonprofit-org-login',
+    failureFlash: true
+  })
+  )
+ 
+
+   app.get('/nonprofit-org-signup', checkNotAuthenticated, (req, res) => {
+    res.render('nonprofit-org-signup.ejs')
+
+  })   
+
+  app.post('/nonprofit-org-signup', checkNotAuthenticated, async (req, res) => {
+    try {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10)
+      users.push({
+        id: Date.now().toString(),
+        name: req.body.contactfirstname,
+        email: req.body.email,
+        password: hashedPassword
+      })
+      const sqlInsert = 'INSERT INTO vms."nonprofit_org" ("Orgname","ContactFirstName","ContactLastName","Address1","City","State","Zip","EmailAddress","Password") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "Id"'
+      const volunteer = [req.body.orgname,req.body.contactfirstname,req.body.contactlastname,req.body.address1,req.body.city,req.body.state,req.body.zip,req.body.email,hashedPassword];
+      pool.query(sqlInsert, volunteer, (err, result) => {
+        if (err) {
+          return console.error(err.message);
         }
-      }
-      
-      res.render('volunteer-signup.ejs')
+        else 
+        { var newlyCreatedUserId = result.rows[0].Id;
+          console.log("id created : "+newlyCreatedUserId)
+          /*const loginInfo = [newlyCreatedUserId, hashedPassword ];
+          const sqlLoginInfoInsert = 'INSERT INTO vms."LoginInfo" ("UserId","Password") VALUES ($1, $2)'
+          pool.query(sqlLoginInfoInsert, loginInfo, (err, result) => {
+            if (err) {
+              return console.error("Error while inserting into LoginInfo table :"+err.message);
+            }
+        })*/}
+        //res.redirect("/volunteer-signup");
     });
-   })*/
+      res.redirect('/nonprofit-org-login')
+    } catch {
+      res.redirect('/nonprofit-org-signup')
+    }
+  })
+ 
   
   app.get('/volunteer-signup', checkNotAuthenticated, (req, res) => {
     res.render('volunteer-signup.ejs')
@@ -121,8 +160,8 @@ if (process.env.NODE_ENV !== 'production') {
         email: req.body.email,
         password: hashedPassword
       })
-      const sqlInsert = 'INSERT INTO vms.Volunteer ("FirstName","LastName","EmailAddress") VALUES ($1, $2, $3) RETURNING "Id"'
-      const volunteer = [req.body.firstname,req.body.lastname, req.body.email];
+      const sqlInsert = 'INSERT INTO vms.Volunteer ("FirstName","LastName","EmailAddress","password") VALUES ($1, $2, $3, $4) RETURNING "Id"'
+      const volunteer = [req.body.firstname,req.body.lastname, req.body.email, hashedPassword];
       pool.query(sqlInsert, volunteer, (err, result) => {
         if (err) {
           return console.error(err.message);
@@ -130,13 +169,13 @@ if (process.env.NODE_ENV !== 'production') {
         else 
         { var newlyCreatedUserId = result.rows[0].Id;
           console.log("id created : "+newlyCreatedUserId)
-          const loginInfo = [newlyCreatedUserId, hashedPassword ];
+          /*const loginInfo = [newlyCreatedUserId, hashedPassword ];
           const sqlLoginInfoInsert = 'INSERT INTO vms."LoginInfo" ("UserId","Password") VALUES ($1, $2)'
           pool.query(sqlLoginInfoInsert, loginInfo, (err, result) => {
             if (err) {
               return console.error("Error while inserting into LoginInfo table :"+err.message);
             }
-        })}
+        })*/}
         //res.redirect("/volunteer-signup");
     });
       res.redirect('/volunteer-login')
@@ -160,9 +199,23 @@ if (process.env.NODE_ENV !== 'production') {
 
   function checkNotAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
-      return res.redirect('/')
+      console.log("testing session")
+      req.session.user = {
+        email: req.body.email,
+        name: req.body.name
+      } ;
+      return res.redirect('/volunteer')
     }
     next()
+  }
+
+  function setSession(req) {
+    console.log("testing session")
+    req.session.user = {
+      email: req.body.email,
+      name: req.body.name
+    } ;
+
   }
   
   app.listen(3000)

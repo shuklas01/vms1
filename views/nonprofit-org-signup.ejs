@@ -1,0 +1,58 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+<!------ Include the above in your HEAD tag ---------->
+
+<div class="container" id="wrap">
+	  <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form action="/nonprofit-org-signup" method="post" accept-charset="utf-8" class="form" role="form">   <legend>Non-profit Org Sign Up</legend>
+                <input type="orgname" name="orgname" value="" class="form-control input-lg" placeholder="Organization Name"  /> 
+                    <div class="row">
+                        <div class="col-xs-6 col-md-6">
+                            <input type="text" name="contactfirstname" value="" class="form-control input-lg" placeholder="Contact First Name"  />                        </div>
+                        <div class="col-xs-6 col-md-6">
+                            <input type="text" name="contactlastname" value="" class="form-control input-lg" placeholder="Contact Last Name"  />                        </div>
+                    </div>
+                    
+                    <input type="text" name="email" value="" class="form-control input-lg" placeholder="Your Email"  /><input type="password" name="password" value="" class="form-control input-lg" placeholder="Password"  /><input type="password" name="confirm_password" value="" class="form-control input-lg" placeholder="Confirm Password"  />                   
+                    <input type="address1" name="address1" value="" class="form-control input-lg" placeholder="Address"  />
+                    <input type="address2" name="address2" value="" class="form-control input-lg" placeholder="Apartment, studio, or floor"  /> 
+ 
+                     <div class="row">
+                        <div class="col-xs-6 col-md-6">
+                            <label for="city">City</label>
+                            <select name="city" class = "form-control input-lg" placeholder="City">
+<option value="Memphis">Memphis</option>
+<option value="Cordova">Cordova</option>
+<option value="Collierville">Collierville</option>
+</select>                        </div>
+                        <div class="col-xs-4 col-md-4">
+                            <label for="state">State</label>
+                            <select name="state" class = "form-control input-lg">
+<option value="1">TN</option>
+<option value="2">MS</option>
+</select>                        </div>
+                        <div class="col-xs-4 col-md-4">
+                            <label for="zip">Zip</label>
+                            <select name="zip" class = "form-control input-lg">
+<option value="38105">38105</option>
+<option value="38016">38016</option>
+<option value="38017">38017</option>
+<option value="38018">38018</option>
+</select>                        </div>
+                    </div>
+                   
+                    <br />
+                    <button class="btn btn-lg btn-primary btn-block signup-btn" type="submit">
+                        Create my account</button>
+                        <div class="col">
+                            <!-- Simple link -->
+                            <a href="/nonprofitorg-login">Already have an account?Login</a>
+                          </div>
+            </form>          
+          </div>
+</div>            
+</div>
+</div>
