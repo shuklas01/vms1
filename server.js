@@ -34,14 +34,12 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(express.urlencoded({ extended: false }))
   app.use(flash())
   app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: "cat",
     resave: false,
     saveUninitialized: true,
     unset: 'destroy',
-    name: 'session cookie name',
-    genid: (req) => {
-        // Returns a random string to be used as a session ID
-    }
+    name: 'session cookie name'
+   
   }))
   app.use(passport.initialize())
   app.use(passport.session())
@@ -78,11 +76,40 @@ if (process.env.NODE_ENV !== 'production') {
     
   app.get('/volunteer',  (req, res) => {
     if(!req.user) {
-      console.log("session"+req.user)
+      console.log("session"+request.user.id)
+      
     }
+    console.log("in volunteer email" + sess.email);
     //console.log("inside volunteer"+req.user.name)
     res.render('volunteer.ejs')
   })
+
+  app.get('/nonprofit-org',  (req, res) => {
+    console.log("in nonprofitorg email" + sess.email);
+    const sqlUserExists = 'SELECT "Orgname" as name FROM vms."nonprofit_org" where "EmailAddress" = $1'
+    pool.query(sqlUserExists , [sess.email], (err, result1) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      else
+      {if (result1.rows.length>0)
+        {
+          console.log('email exists:' + result1.rows[0].name);
+          sess = req.session;
+          sess.name1 =result1.rows[0].name;
+          console.log('session name:' + sess.name1);
+        }}})
+
+    //console.log("inside volunteer"+req.user.name)
+    res.render('nonprofit-org.ejs')
+  })
+
+  app.get('/add-event',  (req, res) => {
+    console.log("in nonprofitorg " + sess.name1);
+   
+    res.render('add-event.ejs')
+  })
+
   
   app.get('/volunteer-login', checkNotAuthenticated, (req, res) => {
     res.render('volunteer-login.ejs')
@@ -99,13 +126,33 @@ if (process.env.NODE_ENV !== 'production') {
     res.render('nonprofit-org-login.ejs')
   })
   
-  app.post('/nonprofit-org-login', checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/volunteer',
-    failureRedirect: '/nonprofit-org-login',
-    failureFlash: true
-  })
-  )
- 
+ /* app.post('/nonprofit-org-login',checkNotAuthenticated,
+
+    passport.authenticate('local', {
+      successRedirect: '/volunteer',
+      failureRedirect: '/nonprofit-org-login',
+      failureFlash: true
+    })
+  
+ );*/
+
+  
+ app.post('/nonprofit-org-login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    console.log("insite auth")
+    
+    if (err) { return next(err); }
+    if (!user) { return res.redirect('/nonprofit-org-login'); }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      sess = req.session;
+      sess.email = req.body.email;
+      console.log("email" + sess.email);
+      console.log("insite auth success")
+      return res.redirect('/nonprofit-org');
+    });
+  })(req, res, next);
+});
 
    app.get('/nonprofit-org-signup', checkNotAuthenticated, (req, res) => {
     res.render('nonprofit-org-signup.ejs')
@@ -121,9 +168,20 @@ if (process.env.NODE_ENV !== 'production') {
         email: req.body.email,
         password: hashedPassword
       })
+      const sqlUserExists = 'SELECT "EmailAddress" as emailAddress FROM vms."nonprofit_org" where "EmailAddress" = $1'
+      pool.query(sqlUserExists , [req.body.email], (err, result1) => {
+        if (err) {
+          return console.error(err.message);
+        }
+        else
+        {if (result1.rows.length>0)
+          {
+            console.log('email exists:' + result1.rows[0].emailAddress)
+            console.log('email exists:' + result1)}}})
+        
       const sqlInsert = 'INSERT INTO vms."nonprofit_org" ("Orgname","ContactFirstName","ContactLastName","Address1","City","State","Zip","EmailAddress","Password") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "Id"'
-      const volunteer = [req.body.orgname,req.body.contactfirstname,req.body.contactlastname,req.body.address1,req.body.city,req.body.state,req.body.zip,req.body.email,hashedPassword];
-      pool.query(sqlInsert, volunteer, (err, result) => {
+      const nonprofitorg = [req.body.orgname,req.body.contactfirstname,req.body.contactlastname,req.body.address1,req.body.city,req.body.state,req.body.zip,req.body.email,hashedPassword];
+      pool.query(sqlInsert, nonprofitorg, (err, result) => {
         if (err) {
           return console.error(err.message);
         }
