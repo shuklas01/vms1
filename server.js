@@ -110,6 +110,29 @@ if (process.env.NODE_ENV !== 'production') {
     res.render('add-event.ejs')
   })
 
+  app.post('/add-event', async (req, res) => {
+    try {
+      console.log("inside event post***");
+      const sqlInsert = 'insert into vms."Event" ("Name","Address1","Address2","City","Zip","TotalPositions","BeginTime","End Time","ContactFirstName","ContactLastName","ContactEmailAddress")'+
+       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "Id"'
+      const event = [req.body.event,req.body.address1, req.body.address2, req.body.city, req.body.zip, req.body.totalpositions, req.body.begintime, req.body.endtime, req.body.contactfirstname, req.body.contactlastname, req.body.contactemail];
+      pool.query(sqlInsert, event, (err, result) => {
+        if (err) {
+          return console.error("Error while creating an event - "+ err.message);
+        }
+        else 
+        { var newlyCreatedUserId = result.rows[0].Id;
+          console.log("event id created : "+newlyCreatedUserId)
+        }
+
+    });
+      res.redirect('/nonprofit-org')
+    } catch {
+      res.redirect('/add-event')
+    }
+  })
+ 
+
   
   app.get('/volunteer-login', checkNotAuthenticated, (req, res) => {
     res.render('volunteer-login.ejs')

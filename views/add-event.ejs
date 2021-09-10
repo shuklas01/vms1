@@ -7,16 +7,59 @@
 <div class="container" id="wrap">
 	  <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <form action="/add-event" method="post" accept-charset="utf-8" class="form" role="form">   <legend>New Event</legend>
-                    <input type="text" name="email" value="" class="form-control input-lg" placeholder="Your Email"  /><input type="password" name="password" value="" class="form-control input-lg" placeholder="Password"  />
-                                  
-                                     <div class="row">
+            <form action="/add-event" method="post" accept-charset="utf-8" class="form" role="form">   <legend>Event</legend>
+                <input type="text" name="event" value="" class="form-control input-lg" placeholder="Event"  /> 
+                <input type="text" name="totalpositions" value="" class="form-control input-lg" placeholder="Total No Of Positions"  />
+                <input type="text" name="date" value="" class="form-control input-lg" placeholder="Date"  />
+                <div class="row">
+                    <div class="col-xs-6 col-md-6">
+                        <input type="text" name="begintime" value="" class="form-control input-lg" placeholder="Begin Time"  />                        </div>
+                    <div class="col-xs-6 col-md-6">
+                        <input type="text" name="endtime" value="" class="form-control input-lg" placeholder="End Time"  />                        </div>
+                </div>
+                <div class="row">
+                        <div class="col-xs-6 col-md-6">
+                            <input type="text" name="contactfirstname" value="" class="form-control input-lg" placeholder="Contact First Name"  />                        </div>
+                        <div class="col-xs-6 col-md-6">
+                            <input type="text" name="contactlastname" value="" class="form-control input-lg" placeholder="Contact Last Name"  />                        </div>
+                    </div>
+                    
+                    
+                    <input type="text" name="contactemail" value="" class="form-control input-lg" placeholder="Contact Email"  />
+                                    
+                    <input type="address1" name="address1" value="" class="form-control input-lg" placeholder="Address"  />
+                    <input type="address2" name="address2" value="" class="form-control input-lg" placeholder="Apartment, studio, or floor"  /> 
+ 
+                     <div class="row">
+                        <div class="col-xs-6 col-md-6">
+                            <label for="city">City</label>
+                            <select name="city" class = "form-control input-lg" placeholder="City">
+<option value="Memphis">Memphis</option>
+<option value="Cordova">Cordova</option>
+<option value="Collierville">Collierville</option>
+</select>                        </div>
+                        <div class="col-xs-4 col-md-4">
+                            <label for="state">State</label>
+                            <select name="state" class = "form-control input-lg">
+<option value="1">TN</option>
+<option value="2">MS</option>
+</select>                        </div>
+                        <div class="col-xs-4 col-md-4">
+                            <label for="zip">Zip</label>
+                            <select name="zip" class = "form-control input-lg">
+<option value="38105">38105</option>
+<option value="38016">38016</option>
+<option value="38017">38017</option>
+<option value="38018">38018</option>
+</select>                        </div>
+                    </div>
+                   
                     <br />
                     <button class="btn btn-lg btn-primary btn-block signup-btn" type="submit">
-                        Login</button>
+                        Add</button>
                         <div class="col">
                             <!-- Simple link -->
-                            <a href="/volunteer-signup">Don't have an account?Sign Up</a>
+                            <a href="/nonprofitorg-login">Already have an account?Login</a>
                           </div>
             </form>          
           </div>
