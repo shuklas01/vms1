@@ -1,14 +1,26 @@
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+>
+
+
 
 <!------ Include the above in your HEAD tag ---------->
 
 <div class="container" id="wrap">
 	  <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <form action="/nonprofit-org-signup" method="post" accept-charset="utf-8" class="form" role="form">   <legend>Non-profit Org Sign Up</legend>
-                <input type="orgname" name="orgname" value="" class="form-control input-lg" placeholder="Organization Name"  /> 
+            <form action="/nonprofit-org-signup" method="post" accept-charset="utf-8" class="form" data-toggle="validator" role="form">   <legend>Non-profit Org Sign Up</legend>
+                <div class="form-group">
+                    <input type="orgname" name="orgname" value="" class="form-control input-lg" placeholder="Organization Name" required  /> 
+                    <div class="help-block with-errors"></div>
+                </div>
+                
                     <div class="row">
                         <div class="col-xs-6 col-md-6">
                             <input type="text" name="contactfirstname" value="" class="form-control input-lg" placeholder="Contact First Name"  />                        </div>
@@ -16,7 +28,15 @@
                             <input type="text" name="contactlastname" value="" class="form-control input-lg" placeholder="Contact Last Name"  />                        </div>
                     </div>
                     
-                    <input type="text" name="email" value="" class="form-control input-lg" placeholder="Your Email"  /><input type="password" name="password" value="" class="form-control input-lg" placeholder="Password"  /><input type="password" name="confirm_password" value="" class="form-control input-lg" placeholder="Confirm Password"  />                   
+                    <input type="email" name="email" value="" class="form-control input-lg" placeholder="Your Email"  />
+                    <div class="form-group">
+                        <input type="password" id="password" name="password" value="" class="form-control input-lg" placeholder="Password" required  />  
+                        <div class="help-block with-errors"></div>
+                    </div>    
+                    <div class="form-group">
+                        <input type="password" name="confirm_password" value="" class="form-control input-lg" data-match="#password" data-match-error="Whoops, Password does not match" placeholder="Confirm Password" required />                   
+                        <div class="help-block with-errors"></div>
+                    </div>    
                     <input type="address1" name="address1" value="" class="form-control input-lg" placeholder="Address"  />
                     <input type="address2" name="address2" value="" class="form-control input-lg" placeholder="Apartment, studio, or floor"  /> 
  
@@ -36,12 +56,14 @@
 </select>                        </div>
                         <div class="col-xs-4 col-md-4">
                             <label for="zip">Zip</label>
-                            <select name="zip" class = "form-control input-lg">
-<option value="38105">38105</option>
-<option value="38016">38016</option>
-<option value="38017">38017</option>
-<option value="38018">38018</option>
-</select>                        </div>
+                            <select name="zip" class = "form-control input-lg" required>
+                            <option value="38105">38105</option>
+                            <option value="38016">38016</option>
+                            <option value="38017">38017</option>
+                            <option value="38018">38018</option>
+                            </select>           
+         
+                        </div>
                     </div>
                    
                     <br />
@@ -56,3 +78,24 @@
 </div>            
 </div>
 </div>
+
+<script>
+    // Disable form submissions if there are invalid fields
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Get the forms we want to add validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
+    </script>
