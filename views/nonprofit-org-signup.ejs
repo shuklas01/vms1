@@ -12,55 +12,89 @@
 
 <!------ Include the above in your HEAD tag ---------->
 
+<script>
+    var stateObject = {
+      "TN": {
+        "Memphis": ["38016", "38017", "38105"]  
+      },
+      "MS": {
+        "Olive Branch": ["38654", "35888", "38777"]
+      }
+    }
+    window.onload = function() {
+      var stateSel = document.getElementById("state");
+      var citySel = document.getElementById("city");
+      var zipSel = document.getElementById("zip");
+      for (var x in stateObject) {
+        stateSel.options[stateSel.options.length] = new Option(x, x);
+      }
+      stateSel.onchange = function() {
+        //empty Chapters- and Topics- dropdowns
+        citySel.length = 1;
+        zipSel.length = 1;
+        //display correct values
+        for (var y in stateObject[this.value]) {
+          citySel.options[citySel.options.length] = new Option(y, y);
+        }
+      }
+      citySel.onchange = function() {
+        //empty Chapters dropdown
+        zipSel.length = 1;
+        //display correct values
+        var z = stateObject[stateSel.value][this.value];
+        for (var i = 0; i < z.length; i++) {
+          zipSel.options[zipSel.options.length] = new Option(z[i], z[i]);
+        }
+      }
+    }
+    </script>
+
 <div class="container" id="wrap">
 	  <div class="row">
         <div class="col-md-6 col-md-offset-3">
             <form action="/nonprofit-org-signup" method="post" accept-charset="utf-8" class="form" data-toggle="validator" role="form">   <legend>Non-profit Org Sign Up</legend>
                 <div class="form-group">
-                    <input type="orgname" name="orgname" value="" class="form-control input-lg" placeholder="Organization Name" required  /> 
+                    <input type="orgname" name="orgname" value="" class="form-control input-lg" placeholder="Organization Name" maxlength="30"  pattern="[A-Za-z]*" required  /> 
                     <div class="help-block with-errors"></div>
                 </div>
                 
                     <div class="row">
                         <div class="col-xs-6 col-md-6">
-                            <input type="text" name="contactfirstname" value="" class="form-control input-lg" placeholder="Contact First Name"  />                        </div>
+                            <input type="text" name="contactfirstname" value="" class="form-control input-lg" maxlength="30"  pattern="[A-Za-z]*" placeholder="Contact First Name"  />                        </div>
                         <div class="col-xs-6 col-md-6">
-                            <input type="text" name="contactlastname" value="" class="form-control input-lg" placeholder="Contact Last Name"  />                        </div>
+                            <input type="text" name="contactlastname" value="" class="form-control input-lg" maxlength="30"  pattern="[A-Za-z]*" placeholder="Contact Last Name"  />                        </div>
                     </div>
-                    
-                    <input type="email" name="email" value="" class="form-control input-lg" placeholder="Your Email"  />
                     <div class="form-group">
-                        <input type="password" id="password" name="password" value="" class="form-control input-lg" placeholder="Password" required  />  
+                        <input type="email" name="email" value="" class="form-control input-lg" maxlength="100" placeholder="Your Email"  />
                         <div class="help-block with-errors"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" name="password" value="" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$@!%?&]).{6,12}$" maxlength="15" class="form-control input-lg" placeholder="Password" required  />  
+                        <div class="help-block with-errors"></div>
+                       
                     </div>    
                     <div class="form-group">
-                        <input type="password" name="confirm_password" value="" class="form-control input-lg" data-match="#password" data-match-error="Whoops, Password does not match" placeholder="Confirm Password" required />                   
+                        <input type="password" name="confirm_password" value="" class="form-control input-lg" maxlength="15" data-match="#password" data-match-error="Whoops, Password does not match" placeholder="Confirm Password" required />                   
                         <div class="help-block with-errors"></div>
                     </div>    
-                    <input type="address1" name="address1" value="" class="form-control input-lg" placeholder="Address"  />
-                    <input type="address2" name="address2" value="" class="form-control input-lg" placeholder="Apartment, studio, or floor"  /> 
+                    <input type="address1" name="address1" value="" maxlength="100" class="form-control input-lg" placeholder="Address" required />
+                    <input type="address2" name="address2" value="" maxlength="100" class="form-control input-lg" placeholder="Apartment, studio, or floor"  /> 
  
                      <div class="row">
                         <div class="col-xs-6 col-md-6">
                             <label for="city">City</label>
-                            <select name="city" class = "form-control input-lg" placeholder="City">
-<option value="Memphis">Memphis</option>
-<option value="Cordova">Cordova</option>
-<option value="Collierville">Collierville</option>
-</select>                        </div>
+                            <select name="city" class = "form-control input-lg" placeholder="City" id="city" 
+                                option value="" selected="selected">Please select State first</option> </select>                        </div>
                         <div class="col-xs-4 col-md-4">
                             <label for="state">State</label>
-                            <select name="state" class = "form-control input-lg">
-<option value="1">TN</option>
-<option value="2">MS</option>
-</select>                        </div>
+                            <select name="state" class = "form-control input-lg" id="state"
+                                option value="TN" selected="selected">Select state</option>
+                            </select>                       
+                         </div>
                         <div class="col-xs-4 col-md-4">
                             <label for="zip">Zip</label>
-                            <select name="zip" class = "form-control input-lg" required>
-                            <option value="38105">38105</option>
-                            <option value="38016">38016</option>
-                            <option value="38017">38017</option>
-                            <option value="38018">38018</option>
+                            <select name="zip" class = "form-control input-lg" id="zip"
+                                option value="" selected="selected">Select subject</option>
                             </select>           
          
                         </div>
@@ -79,23 +113,3 @@
 </div>
 </div>
 
-<script>
-    // Disable form submissions if there are invalid fields
-    (function() {
-      'use strict';
-      window.addEventListener('load', function() {
-        // Get the forms we want to add validation styles to
-        var forms = document.getElementsByClassName('needs-validation');
-        // Loop over them and prevent submission
-        var validation = Array.prototype.filter.call(forms, function(form) {
-          form.addEventListener('submit', function(event) {
-            if (form.checkValidity() === false) {
-              event.preventDefault();
-              event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-          }, false);
-        });
-      }, false);
-    })();
-    </script>
