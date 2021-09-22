@@ -7,14 +7,23 @@
 <div class="container" id="wrap">
 	  <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <form action="/volunteer-signup" method="post" accept-charset="utf-8" class="form" role="form">   <legend>Volunteer Sign Up</legend>
+            <form action="/volunteer-signup" method="post" accept-charset="utf-8" class="form" data-toggle="validator" role="form">   <legend>Volunteer Sign Up</legend>
                     <div class="row">
                         <div class="col-xs-6 col-md-6">
-                            <input type="text" name="firstname" value="" class="form-control input-lg" placeholder="First Name"  />                        </div>
+                            <input type="text" name="firstname" value="" class="form-control input-lg" placeholder="First Name" maxlength="30"  pattern="[A-Za-z]*" placeholder="Contact Last Name" required />                        </div>
                         <div class="col-xs-6 col-md-6">
-                            <input type="text" name="lastname" value="" class="form-control input-lg" placeholder="Last Name"  />                        </div>
+                            <input type="text" name="lastname" value="" class="form-control input-lg" placeholder="Last Name" maxlength="30"  pattern="[A-Za-z]*" placeholder="Contact Last Name" required  />                        </div>
                     </div>
-                    <input type="text" name="email" value="" class="form-control input-lg" placeholder="Your Email"  /><input type="password" name="password" value="" class="form-control input-lg" placeholder="Password"  /><input type="password" name="confirm_password" value="" class="form-control input-lg" placeholder="Confirm Password"  />                    <label>Birth Date</label>                    <div class="row">
+                    <input type="text" name="email" value="" class="form-control input-lg" placeholder="Your Email"  />
+                    <div class="form-group">
+                        <input type="password" id="password" name="password" value="" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$@!%?&]).{6,12}$" maxlength="15" class="form-control input-lg" placeholder="Password" required  />  
+                        <div class="help-block with-errors"></div>
+                       
+                    </div>    
+                    <div class="form-group">
+                        <input type="password" name="confirm_password" value="" class="form-control input-lg" maxlength="15" data-match="#password" data-match-error="Whoops, Password does not match" placeholder="Confirm Password" required />                   
+                        <div class="help-block with-errors"></div>
+                    </div>        <label>Birth Date</label>                    <div class="row">
                         <div class="col-xs-4 col-md-4">
                             <select name="month" class = "form-control input-lg">
 <option value="01">Jan</option>

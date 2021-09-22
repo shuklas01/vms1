@@ -1,16 +1,86 @@
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+
+<!-- Datepicker -->
+<link href='bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css' rel='stylesheet' type='text/css'>
+<script src='bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' type='text/javascript'></script>
 <!------ Include the above in your HEAD tag ---------->
+<script>
+    var stateObject = {
+      "TN": {
+        "Memphis": ["38016", "38017", "38105"]  
+      },
+      "MS": {
+        "Olive Branch": ["38654", "35888", "38777"]
+      }
+    }
+    window.onload = function() {
+      var stateSel = document.getElementById("state");
+      var citySel = document.getElementById("city");
+      var zipSel = document.getElementById("zip");
+      for (var x in stateObject) {
+        stateSel.options[stateSel.options.length] = new Option(x, x);
+      }
+      stateSel.onchange = function() {
+        //empty Chapters- and Topics- dropdowns
+        citySel.length = 1;
+        zipSel.length = 1;
+        //display correct values
+        for (var y in stateObject[this.value]) {
+          citySel.options[citySel.options.length] = new Option(y, y);
+        }
+      }
+      citySel.onchange = function() {
+        //empty Chapters dropdown
+        zipSel.length = 1;
+        //display correct values
+        var z = stateObject[stateSel.value][this.value];
+        for (var i = 0; i < z.length; i++) {
+          zipSel.options[zipSel.options.length] = new Option(z[i], z[i]);
+        }
+      }
+    }
+    </script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+     
+      $('#datepicker').datepicker({
+        format: "yy-mm-dd",
+        startDate: new Date('2019-12-5'),
+        endDate: new Date('2020-7-12')
+      });
+    
+    });
+    </script>
 
 <div class="container" id="wrap">
 	  <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <form action="/add-event" method="post" accept-charset="utf-8" class="form" role="form">   <legend>Event</legend>
-                <input type="text" name="event" value="" class="form-control input-lg" placeholder="Event"  /> 
-                <input type="text" name="totalpositions" value="" class="form-control input-lg" placeholder="Total No Of Positions"  />
-                <input type="text" name="date" value="" class="form-control input-lg" placeholder="Date"  />
+            <form action="/add-event" method="post" accept-charset="utf-8" class="form" data-toggle="validator" role="form" >   <legend>Event</legend>
+                <div class="form-group">
+                    <input type="text" name="event" value="" class="form-control input-lg" placeholder="Event" maxlength="10"  pattern="[A-Za-z]*" required /> 
+                    <div class="help-block with-errors"></div>
+                </div>
+                <input type="text" name="totalpositions" value="" class="form-control input-lg" placeholder="Total No Of Positions" maxlength="3"  pattern="[0-9]*" required />
+                
+                <div class="form-group">
+                        <div id="embeddingDatePicker"></div>
+                        <input type="text" name="date" placeholder="Date" />
+                </div>
+                <div class='form-group'>
+ 
+                    <input type='text' class="form-control input-lg" id='datepicker' name="date" placeholder='Date' style='width: 300px;'  >
+                   
+                   </div>
+                
+                
                 <div class="row">
                     <div class="col-xs-6 col-md-6">
                         <input type="text" name="begintime" value="" class="form-control input-lg" placeholder="Begin Time"  />                        </div>
@@ -19,40 +89,40 @@
                 </div>
                 <div class="row">
                         <div class="col-xs-6 col-md-6">
-                            <input type="text" name="contactfirstname" value="" class="form-control input-lg" placeholder="Contact First Name"  />                        </div>
+                            <input type="text" name="contactfirstname" value="" class="form-control input-lg" placeholder="Contact First Name" maxlength="30"  pattern="[A-Za-z]*" required  />                        </div>
                         <div class="col-xs-6 col-md-6">
-                            <input type="text" name="contactlastname" value="" class="form-control input-lg" placeholder="Contact Last Name"  />                        </div>
+                            <input type="text" name="contactlastname" value="" class="form-control input-lg" placeholder="Contact Last Name" maxlength="30"  pattern="[A-Za-z]*" required  />                        </div>
                     </div>
                     
                     
-                    <input type="text" name="contactemail" value="" class="form-control input-lg" placeholder="Contact Email"  />
+                    <div class="form-group">
+                        <input type="email" name="contactemail" value="" class="form-control input-lg" maxlength="100" placeholder="Contact Email"  />
+                        <div class="help-block with-errors"></div>
+                    </div>
                                     
-                    <input type="address1" name="address1" value="" class="form-control input-lg" placeholder="Address"  />
-                    <input type="address2" name="address2" value="" class="form-control input-lg" placeholder="Apartment, studio, or floor"  /> 
+                    <input type="address1" name="address1" value="" maxlength="100" class="form-control input-lg" placeholder="Address" required />
+                    <input type="address2" name="address2" value="" maxlength="100" class="form-control input-lg" placeholder="Apartment, studio, or floor"  /> 
  
                      <div class="row">
                         <div class="col-xs-6 col-md-6">
                             <label for="city">City</label>
-                            <select name="city" class = "form-control input-lg" placeholder="City">
-<option value="Memphis">Memphis</option>
-<option value="Cordova">Cordova</option>
-<option value="Collierville">Collierville</option>
-</select>                        </div>
+                            <select name="city" class = "form-control input-lg" placeholder="City" id="city" 
+                                option value="" selected="selected">Please select State first</option> </select>                        </div>
                         <div class="col-xs-4 col-md-4">
                             <label for="state">State</label>
-                            <select name="state" class = "form-control input-lg">
-<option value="1">TN</option>
-<option value="2">MS</option>
-</select>                        </div>
+                            <select name="state" class = "form-control input-lg" id="state"
+                                option value="TN" selected="selected">Select state</option>
+                            </select>                       
+                         </div>
                         <div class="col-xs-4 col-md-4">
                             <label for="zip">Zip</label>
-                            <select name="zip" class = "form-control input-lg">
-<option value="38105">38105</option>
-<option value="38016">38016</option>
-<option value="38017">38017</option>
-<option value="38018">38018</option>
-</select>                        </div>
+                            <select name="zip" class = "form-control input-lg" id="zip"
+                                option value="" selected="selected">Select subject</option>
+                            </select>           
+         
+                        </div>
                     </div>
+  
                    
                     <br />
                     <button class="btn btn-lg btn-primary btn-block signup-btn" type="submit">
