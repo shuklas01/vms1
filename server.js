@@ -62,20 +62,19 @@ if (process.env.NODE_ENV !== 'production') {
 
   })
   
-  app.get('/test',  (req, res) => {
+  //app.get('/test/event/:event',  (req, res) => {
+   app.get('/test',  (req, res) => {
 
-    const sql = 'SELECT * FROM vms.Volunteer'
-    pool.query(sql , [], (err, result) => {
-      if (err) {
-        return console.error(err.message);
-      }
-      console.log(result)
-      res.render('test.ejs', { model: result.rows });
-    });
+      console.log("event:"+req.params.event)
+      res.render('test.ejs');
+
   });
 
 
   app.get('/view-events',  (req, res) => {
+    sess = req.session;
+    console.log("in view event **** nonprofitorg id :" + sess.nonprofitorgid);
+      //var nonprofitorgid = sess.nonprofitorgid;
 
     const sql = 'select * from vms."Event" where nonprofitorgid = 28'
     pool.query(sql , [], (err, result) => {
@@ -129,7 +128,7 @@ if (process.env.NODE_ENV !== 'production') {
       console.log("inside event post***");
       //sess = req.session;
       console.log("in nonprofitorg id :" + sess.nonprofitorgid);
-      var nonprofitorgid = sess.nonprofitorgid;
+      var nonprofitorgid = 28;
       const sqlInsert = 'insert into vms."Event" ("Name","Address1","Address2","City","Zip","TotalPositions","BeginTime","End Time","ContactFirstName","ContactLastName","ContactEmailAddress","Description","nonprofitorgid","State")'+
        'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING "Id"'
       const event = [req.body.event,req.body.address1, req.body.address2, req.body.city, req.body.zip, req.body.totalpositions, req.body.begintime, req.body.endtime, req.body.contactfirstname, req.body.contactlastname, req.body.contactemail, req.body.description, nonprofitorgid, req.body.state];
@@ -162,7 +161,7 @@ if (process.env.NODE_ENV !== 'production') {
   })
   )
 
-  app.get('/nonprofit-org-login', checkNotAuthenticated, (req, res) => {
+  app.get('/nonprofit-org-login', (req, res) => {
     res.render('nonprofit-org-login.ejs')
   })
   
@@ -185,8 +184,21 @@ if (process.env.NODE_ENV !== 'production') {
     if (!user) { return res.redirect('/nonprofit-org-login'); }
     req.logIn(user, function(err) {
       if (err) { return next(err); }
-      sess = req.session;
-      sess.email = req.body.email;
+      console.log("in nonprofitorg email" + sess.email);
+      const sqlUserExists = 'SELECT "Orgname" as name , "Id" as id FROM vms."nonprofit_org" where "EmailAddress" = $1'
+      pool.query(sqlUserExists , [sess.email], (err, result1) => {
+        if (err) {
+          return console.error(err.message);
+        }
+        else
+        {if (result1.rows.length>0)
+          {
+            console.log('email exists:' + result1.rows[0].name);
+            sess = req.session;
+            sess.name1 =result1.rows[0].name;
+            sess.nonprofitorgid=result1.rows[0].id;
+            console.log('session name:' + sess.name1);
+          }}})
       console.log("email" + sess.email);
       console.log("insite auth success")
       return res.redirect('/view-events');
@@ -194,7 +206,7 @@ if (process.env.NODE_ENV !== 'production') {
   })(req, res, next);
 });
 
-   app.get('/nonprofit-org-signup', checkNotAuthenticated, (req, res) => {
+   app.get('/nonprofit-org-signup',  (req, res) => {
     res.render('nonprofit-org-signup.ejs')
 
   })   
@@ -244,7 +256,7 @@ if (process.env.NODE_ENV !== 'production') {
   })
  
   
-  app.get('/volunteer-signup', checkNotAuthenticated, (req, res) => {
+  app.get('/volunteer-signup', (req, res) => {
     res.render('volunteer-signup.ejs')
 
   })
@@ -258,14 +270,19 @@ if (process.env.NODE_ENV !== 'production') {
         email: req.body.email,
         password: hashedPassword
       })
-      const sqlInsert = 'INSERT INTO vms.Volunteer ("FirstName","LastName","EmailAddress","password") VALUES ($1, $2, $3, $4) RETURNING "Id"'
+      console.log("inside volunteer signup")
+      const sqlInsert = 'INSERT INTO vms."volunteer" ("FirstName","LastName","EmailAddress","Password") VALUES ($1, $2, $3, $4) RETURNING "Id"'
       const volunteer = [req.body.firstname,req.body.lastname, req.body.email, hashedPassword];
       pool.query(sqlInsert, volunteer, (err, result) => {
+        console.log("inside volunteer signup 1")
         if (err) {
+          console.log("inside volunteer signup error"+ err.message)
           return console.error(err.message);
         }
         else 
-        { var newlyCreatedUserId = result.rows[0].Id;
+        { 
+          console.log("inside volunteer signup 2")
+          var newlyCreatedUserId = result.rows[0].Id;
           console.log("id created : "+newlyCreatedUserId)
           /*const loginInfo = [newlyCreatedUserId, hashedPassword ];
           const sqlLoginInfoInsert = 'INSERT INTO vms."LoginInfo" ("UserId","Password") VALUES ($1, $2)'

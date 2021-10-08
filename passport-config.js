@@ -26,7 +26,7 @@ function initialize(passport, getUserByEmail, getUserById) {
     }
 
     //const sql = 'SELECT "Password" as password FROM vms.Volunteer WHERE "EmailAddress" = $1'
-    const sql = 'SELECT "Password" as password FROM vms.Volunteer WHERE  "EmailAddress" = $1 UNION SELECT "Password" as "password" FROM vms."nonprofit_org" WHERE  "EmailAddress" = $1'
+    const sql = 'SELECT "Password" as password FROM vms."volunteer" WHERE  "EmailAddress" = $1 UNION SELECT "Password" as "password" FROM vms."nonprofit_org" WHERE  "EmailAddress" = $1'
     //const sql = 'SELECT "Password" as password FROM vms."LoginInfo" as l inner join vms.Volunteer as v on l."UserId" = v."Id"  WHERE  "EmailAddress" = $1'
     pool.query(sql , [email], (err, result) => {
       if (err) {
