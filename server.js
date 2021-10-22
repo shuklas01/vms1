@@ -65,18 +65,94 @@ if (process.env.NODE_ENV !== 'production') {
   //app.get('/test/event/:event',  (req, res) => {
    app.get('/test',  (req, res) => {
 
-      console.log("event:"+req.params.event)
+      console.log("event:"+req.query.id)
       res.render('test.ejs');
 
   });
 
+
+
+  app.get('/search-event',  (req, res) => {
+  
+    //res.render('test1.ejs');
+    res.render('search-event.ejs', { model: [] });
+  });
+
+  app.post('/search-event',  (req, res) => {
+  
+
+    const sql = 'select * from vms."Event" where "nonprofitorgid" = '+
+    '(select "Id" from vms."nonprofit_org" where "Orgname"= $1) '+
+    'and "Date" between to_date($2,\'MM/DD/YYYY\') and to_date($3,\'MM/DD/YYYY\')';
+    const event = [req.body.nonProfitOrgName,req.body.fromDate, req.body.toDate];
+    console.log("****SQL"+sql);
+    console.log("****fromDate"+req.body.fromDate);
+    console.log("****toDate"+req.body.toDate);
+    pool.query(sql , event, (err, result) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log(result)
+      res.render('search-event.ejs', { model: result.rows });
+    });
+  });
+
+  app.get('/event',  (req, res) => {
+    sess = req.session;
+    sess.eventId = req.body.eventid;
+    //console.log("in event **** nonprofitorg id :" + sess.nonprofitorgid);
+      //var nonprofitorgid = sess.nonprofitorgid;
+      console.log("event:"+req.query.id)
+    const sql = 'select "Name","Address1","Address2","City","Zip","TotalPositions","BeginTime","EndTime","ContactFirstName","ContactLastName","ContactEmailAddress","Description","nonprofitorgid","State","Date" from vms."Event" where "Id" =  $1'
+    pool.query(sql , [req.query.id], (err, result) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log(result)
+      res.render('event.ejs', { model: result.rows });
+    });
+  });
+
+  app.post('/event',  (req, res) => {
+    try {
+      console.log("inside event edit***");
+      sess = req.session;
+      console.log("inside event edit*** Id" + req.body.eventid);
+      //sess = req.session;
+      console.log("in nonprofitorg id :" + req.body.event);
+      const sqlUpdate = 'update vms."Event" set "Name" = $1, "Address1" = $2, "Address2" = $3, "City" = $4, "Zip" = $5, "TotalPositions" = $6,'+
+                        '"BeginTime"= $7, "EndTime"=$8, "ContactFirstName"=$9,"ContactLastName"=$10,"ContactEmailAddress"=$11,"Description"=$12 ,"State"=$13 '+
+                        'where "Id"= 10 ' 
+
+
+      const event = [req.body.event,req.body.address1, req.body.address2, req.body.city, req.body.zip, req.body.totalpositions, req.body.begintime, req.body.endtime, req.body.contactfirstname, req.body.contactlastname, req.body.contactemail, req.body.description, req.body.state];
+      
+      /*const sqlUpdate = 'update vms."Event" set "Name" = $1, "Address1" = $2 where "Id"= 10 ' 
+
+
+      const event = [req.body.event,req.body.address1]; */
+      pool.query(sqlUpdate, event, (err, result) => {
+        if (err) {
+          return console.error("Error while updating an event - "+ err.message);
+        }
+        else 
+        { //var newlyCreatedUserId = result.rows[0].Id;
+          console.log("event id updated : "+sess.eventId)
+        }
+
+    });
+      res.redirect('/view-events')
+    } catch {
+      res.redirect('/event')
+    }
+  })
 
   app.get('/view-events',  (req, res) => {
     sess = req.session;
     console.log("in view event **** nonprofitorg id :" + sess.nonprofitorgid);
       //var nonprofitorgid = sess.nonprofitorgid;
 
-    const sql = 'select * from vms."Event" where nonprofitorgid = 28'
+    const sql = 'select * from vms."Event" where nonprofitorgid = 28 order by "Id"'
     pool.query(sql , [], (err, result) => {
       if (err) {
         return console.error(err.message);
@@ -93,7 +169,7 @@ if (process.env.NODE_ENV !== 'production') {
     }
     console.log("in volunteer email" + sess.email);
     //console.log("inside volunteer"+req.user.name)
-    res.render('volunteer.ejs')
+    res.render('search-event.ejs',{ model: [] })
   })
 
   app.get('/nonprofit-org',  (req, res) => {
@@ -129,9 +205,9 @@ if (process.env.NODE_ENV !== 'production') {
       //sess = req.session;
       console.log("in nonprofitorg id :" + sess.nonprofitorgid);
       var nonprofitorgid = 28;
-      const sqlInsert = 'insert into vms."Event" ("Name","Address1","Address2","City","Zip","TotalPositions","BeginTime","End Time","ContactFirstName","ContactLastName","ContactEmailAddress","Description","nonprofitorgid","State")'+
-       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING "Id"'
-      const event = [req.body.event,req.body.address1, req.body.address2, req.body.city, req.body.zip, req.body.totalpositions, req.body.begintime, req.body.endtime, req.body.contactfirstname, req.body.contactlastname, req.body.contactemail, req.body.description, nonprofitorgid, req.body.state];
+      const sqlInsert = 'insert into vms."Event" ("Name","Address1","Address2","City","Zip","TotalPositions","BeginTime","EndTime","ContactFirstName","ContactLastName","ContactEmailAddress","Description","nonprofitorgid","State","Date")'+
+       'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING "Id"'
+      const event = [req.body.event,req.body.address1, req.body.address2, req.body.city, req.body.zip, req.body.totalpositions, req.body.begintime, req.body.endtime, req.body.contactfirstname, req.body.contactlastname, req.body.contactemail, req.body.description, nonprofitorgid, req.body.state, TO_DATE(req.body.date, 'MM/DD/YYYY')];
       pool.query(sqlInsert, event, (err, result) => {
         if (err) {
           return console.error("Error while creating an event - "+ err.message);
@@ -155,7 +231,7 @@ if (process.env.NODE_ENV !== 'production') {
   })
   
   app.post('/volunteer-login',checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/volunteer',
+    successRedirect: '/search-event',
     failureRedirect: '/volunteer-login',
     failureFlash: true
   })

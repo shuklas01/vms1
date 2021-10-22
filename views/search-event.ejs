@@ -1,0 +1,97 @@
+
+
+    <!-- Icons font CSS-->
+    <link href="vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+    <link href="vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <!-- Font special for pages-->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+
+    <!-- Vendor CSS-->
+    <link href="vendor/select2/select2.min.css" rel="stylesheet" media="all">
+    <link href="vendor/datepicker/daterangepicker.css" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="css/main.css" rel="stylesheet" media="all">
+    <!-- Jquery JS-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <!-- Vendor JS-->
+    <script src="vendor/select2/select2.min.js"></script>
+    <script src="vendor/jquery-validate/jquery.validate.min.js"></script>
+    <script src="vendor/bootstrap-wizard/bootstrap.min.js"></script>
+    <script src="vendor/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
+    <script src="vendor/datepicker/moment.min.js"></script>
+    <script src="vendor/datepicker/daterangepicker.js"></script>
+    <script src="js/global.js"></script>
+
+    <!-- Main JS-->
+
+    <style type="text/css">
+      body { background: gray !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+    </style>
+
+
+
+    <div class="page-wrapper bg-color-1 p-t-395 p-b-120">
+        <div class="wrapper wrapper--w1070">
+            <div class="card card-7">
+                <div class="card-body">
+                    <form class="form" method="POST" action="#">
+                        <div class="input-group input--large">
+                            <label class="label">Event Name</label>
+                            <input class="input--style-1" type="text" placeholder="Organization Name" name="nonProfitOrgName">
+                        </div>
+                        <div class="input-group input--medium">
+                            <label class="label">From Date</label>
+                            <input class="input--style-1" type="text" name="fromDate" placeholder="mm/dd/yyyy" id="input-start">
+                        </div>
+                        <div class="input-group input--medium">
+                            <label class="label">To Date</label>
+                            <input class="input--style-1" type="text" name="toDate" placeholder="mm/dd/yyyy" id="input-end">
+                        </div>
+        
+                        <button class="btn-submit" type="submit">search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%if(model.length>0){%> 
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+    
+          <!-- List group-->
+          <ul class="list-group shadow">
+              <% for (const event of model) { %>
+            <!-- list group item-->
+            <li class="list-group-item">
+              <!-- Custom content-->
+              <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+                <div class="media-body order-2 order-lg-1">
+                  <a href="/event?id=<%= event.Id %>"><%= event.Name %></a>
+                  
+                  <p class="font-italic text-muted mb-0 small"><%= event.Description %></p>
+                  <div class="d-flex align-items-center justify-content-between mt-1">
+                    <h6 class="font-weight-bold my-2">Contact Name : <%= event.ContactFirstName %> <%= event.ContactLastName %></h6>
+                    
+                    
+                  </div>
+                  <h7 class="font-weight-bold my-2">Contact Email : <%= event.ContactEmailAddress %></h7>
+                  <h8 class="font-weight-bold my-2">Location : <%= event.Address1 %>, <%= event.City %>, <%= event.State %>, <%= event.Zip %></h8>
+                  
+              </div>
+              <!-- End -->
+            </li>
+            <!-- End -->
+    
+            <% } %>
+          </ul>
+          <!-- End -->
+        </div>
+      </div>
+      
+    </div><%}%> 
+
+    
+
+
