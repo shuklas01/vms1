@@ -98,6 +98,22 @@ if (process.env.NODE_ENV !== 'production') {
     });
   });
 
+  app.get('/subscribed-events',  (req, res) => {
+    sess = req.session;
+    console.log("in subscribed event **** volunteer id :" + sess.nonprofitorgid);
+      //var nonprofitorgid = sess.nonprofitorgid;
+
+    const sql = 'select * from vms."Event" where "Id" in '+
+    ' (select "Event_Id" from vms."Volunteer_Event_Subscription" where "Volunteer_Id" =4 )'
+    pool.query(sql , [], (err, result) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log(result)
+      res.render('subscribed-events.ejs', { model: result.rows });
+    });
+  });
+
   app.get('/volunteer-event',  (req, res) => {
     sess = req.session;
     sess.eventId = req.body.eventid;
@@ -139,7 +155,7 @@ if (process.env.NODE_ENV !== 'production') {
         }
 
     });
-      res.redirect('/search-event')
+      res.redirect('/subscribed-events')
     } catch {
       res.redirect('/volunteer-event')
     }
@@ -281,7 +297,7 @@ if (process.env.NODE_ENV !== 'production') {
   })
   
   app.post('/volunteer-login', passport.authenticate('local', {
-    successRedirect: '/search-event',
+    successRedirect: '/subscribed-events',
     failureRedirect: '/volunteer-login',
     failureFlash: true
   })
