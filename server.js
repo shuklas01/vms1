@@ -38,7 +38,8 @@ if (process.env.NODE_ENV !== 'production') {
     resave: false,
     saveUninitialized: true,
     unset: 'destroy',
-    name: 'session cookie name'
+    name: 'session cookie name',
+    cookie: {maxAge: 24*60*60*1000} 
    
   }))
   app.use(passport.initialize())
@@ -97,6 +98,53 @@ if (process.env.NODE_ENV !== 'production') {
     });
   });
 
+  app.get('/volunteer-event',  (req, res) => {
+    sess = req.session;
+    sess.eventId = req.body.eventid;
+    //console.log("in event **** nonprofitorg id :" + sess.nonprofitorgid);
+      //var nonprofitorgid = sess.nonprofitorgid;
+      console.log("event:"+req.query.id)
+    const sql = 'select "Id","Name","Address1","Address2","City","Zip","TotalPositions","BeginTime","EndTime","ContactFirstName","ContactLastName","ContactEmailAddress","Description","nonprofitorgid","State","Date" from vms."Event" where "Id" =  $1'
+    pool.query(sql , [req.query.id], (err, result) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log(result)
+      res.render('volunteer-event.ejs', { model: result.rows });
+    });
+  });
+
+  app.post('/volunteer-event',  (req, res) => {
+    try {
+      console.log("inside volunteer event***");
+      sess = req.session;
+      console.log("inside event volunteer*** eventId" + req.body.eventid);
+      //sess = req.session;
+      console.log("in volunteer event id :" + req.body.event);
+      const sqlInsert = 'insert into vms."Volunteer_Event_Subscription" ("Volunteer_Id","Event_Id") values ($1,$2)'
+
+      const eventSubscription = [4,req.body.eventId];
+      
+      /*const sqlUpdate = 'update vms."Event" set "Name" = $1, "Address1" = $2 where "Id"= 10 ' 
+
+
+      const event = [req.body.event,req.body.address1]; */
+      pool.query(sqlInsert, eventSubscription, (err, result) => {
+        if (err) {
+          return console.error("Error while inserting an event subscription- "+ err.message);
+        }
+        else 
+        { //var newlyCreatedUserId = result.rows[0].Id;
+          console.log("event subscription inserted : "+sess.eventId)
+        }
+
+    });
+      res.redirect('/search-event')
+    } catch {
+      res.redirect('/volunteer-event')
+    }
+  })
+
   app.get('/event',  (req, res) => {
     sess = req.session;
     sess.eventId = req.body.eventid;
@@ -112,6 +160,8 @@ if (process.env.NODE_ENV !== 'production') {
       res.render('event.ejs', { model: result.rows });
     });
   });
+
+  
 
   app.post('/event',  (req, res) => {
     try {
@@ -230,7 +280,7 @@ if (process.env.NODE_ENV !== 'production') {
     res.render('volunteer-login.ejs')
   })
   
-  app.post('/volunteer-login',checkNotAuthenticated, passport.authenticate('local', {
+  app.post('/volunteer-login', passport.authenticate('local', {
     successRedirect: '/search-event',
     failureRedirect: '/volunteer-login',
     failureFlash: true
