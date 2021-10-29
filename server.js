@@ -167,7 +167,7 @@ if (process.env.NODE_ENV !== 'production') {
     //console.log("in event **** nonprofitorg id :" + sess.nonprofitorgid);
       //var nonprofitorgid = sess.nonprofitorgid;
       console.log("event:"+req.query.id)
-    const sql = 'select "Name","Address1","Address2","City","Zip","TotalPositions","BeginTime","EndTime","ContactFirstName","ContactLastName","ContactEmailAddress","Description","nonprofitorgid","State","Date" from vms."Event" where "Id" =  $1'
+    const sql = 'select "Id", "Name","Address1","Address2","City","Zip","TotalPositions","BeginTime","EndTime","ContactFirstName","ContactLastName","ContactEmailAddress","Description","nonprofitorgid","State","Date" from vms."Event" where "Id" =  $1'
     pool.query(sql , [req.query.id], (err, result) => {
       if (err) {
         return console.error(err.message);
@@ -237,6 +237,24 @@ if (process.env.NODE_ENV !== 'production') {
     //console.log("inside volunteer"+req.user.name)
     res.render('search-event.ejs',{ model: [] })
   })
+
+  app.get('/subscribed-volunteers',  (req, res) => {
+    sess = req.session;
+    console.log("in subscrinbed volunteers **** volunteer id :" + sess.nonprofitorgid);
+      //var nonprofitorgid = sess.nonprofitorgid;
+
+    const sql = 'select * from vms."volunteer" where "Id" in '+
+      '(select "Volunteer_Id" from vms."Volunteer_Event_Subscription" where "Event_Id" = $1)';
+    
+    pool.query(sql , [req.query.id], (err, result) => {
+    //pool.query(sql , [], (err, result) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log(result)
+      res.render('subscribed-volunteers.ejs', { model: result.rows });
+    });
+  });
 
   app.get('/nonprofit-org',  (req, res) => {
     console.log("in nonprofitorg email" + sess.email);

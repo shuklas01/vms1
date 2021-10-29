@@ -73,7 +73,7 @@
                     <input type="text" name="event" value=<%= event.Name %> class="form-control input-lg" placeholder="Event" maxlength="50"  required /> 
                     <div class="help-block with-errors"></div>
                 </div>
-
+                <input type="hidden" id="eventId" name="eventId" value="<%= event.Id %>">  
                 <div class="form-group">
                     <input type="text" name="description" value="<%= event.Description %>" class="form-control input-lg" placeholder="Description" maxlength="500"  p required /> 
                     <div class="help-block with-errors"></div>
@@ -127,12 +127,13 @@
                             </select>           
          
                         </div>
+                        <a href="/subscribed-volunteers?id=<%= event.Id %>">Volunteers</a>
                     </div>
   
                    
                     <br />
                     <button class="btn btn-lg btn-primary btn-block signup-btn" type="submit">
-                        Add</button>
+                        Update</button>
                         <div class="col">
                             <!-- Simple link -->
                             <a href="/view-events">Back to Events</a>

@@ -1,0 +1,58 @@
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"/>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.bundle.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+>
+
+<style type="text/css">
+    body { background: gray !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+ </style>
+ 
+
+<div class="container py-5">
+
+    <!-- For demo purpose -->
+    <div class="row text-left text-navy mb-5">
+      <div class="col-lg-7 mx-auto">
+        <h1 class="display-4">Volunteers</h1>
+    
+
+      </div>
+    </div>
+    <!-- End -->
+  
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+  
+        <!-- List group-->
+        <ul class="list-group shadow">
+            <% for (const volunteer of model) { %>
+          <!-- list group item-->
+          <li class="list-group-item">
+            <!-- Custom content-->
+            <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+              <div class="media-body order-2 order-lg-1">
+                <p class="font-italic text-muted mb-0 small">Name : <%= volunteer.FirstName %> <%= volunteer.LastName %></p>
+                <p class="font-italic text-muted mb-0 small">Email Address :<%= volunteer.EmailAddress %></p>
+    
+            </div>
+            <!-- End -->
+          </li>
+          <!-- End -->
+  
+          <% } %>
+        </ul>
+        <!-- End -->
+      </div>
+    </div>
+    <div class="col">
+        <!-- Simple link -->
+        <a href="/event?id=<%= event.Id %>">Back to Event</a>
+      </div>
+  </div>
