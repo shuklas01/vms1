@@ -243,8 +243,8 @@ if (process.env.NODE_ENV !== 'production') {
     console.log("in subscrinbed volunteers **** volunteer id :" + sess.nonprofitorgid);
       //var nonprofitorgid = sess.nonprofitorgid;
 
-    const sql = 'select * from vms."volunteer" where "Id" in '+
-      '(select "Volunteer_Id" from vms."Volunteer_Event_Subscription" where "Event_Id" = $1)';
+    const sql = 'select v."FirstName", v."LastName", v."EmailAddress", ves."Event_Id" from vms."volunteer" v inner join vms."Volunteer_Event_Subscription" ves '+
+                ' on v."Id" = ves."Volunteer_Id" where  "Event_Id" = $1';
     
     pool.query(sql , [req.query.id], (err, result) => {
     //pool.query(sql , [], (err, result) => {
