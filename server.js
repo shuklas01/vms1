@@ -22,9 +22,9 @@ if (process.env.NODE_ENV !== 'production') {
   const users = []
 
  const pool =new Pool({
-        user: "vms_prod",
-        password: "vms_prod",
-        host: "localhost",
+        user: "postgres",
+        password: "postgres",
+        host: "volunteermanagement.cty2ahzz8pfv.us-west-2.rds.amazonaws.com",
         port: "5432",
         database: "volunteermanagement"
   } )
