@@ -78,10 +78,11 @@
                     <input type="text" name="description" value="<%= event.Description %>" class="form-control input-lg" placeholder="Description" maxlength="500"  p required /> 
                     <div class="help-block with-errors"></div>
                 </div>
+                <label for="totalpositions">Total Positions</label>
                 <input type="text" name="totalpositions" value="<%= event.TotalPositions %>" class="form-control input-lg" placeholder="Total No Of Positions" maxlength="3"  pattern="[0-9]*" required />
                 
                 <div class='form-group'>
- 
+                  <label for="Date">City</label>
                     <input type='text' class="form-control input-lg" id='datepicker' value="<%= event.Date %>" name="date" placeholder='Date' style='width: 300px;'  >
                    
                    </div>
@@ -89,44 +90,46 @@
                 
                 <div class="row">
                     <div class="col-xs-6 col-md-6">
+                        <label for="city">Begin Time</label>
                         <input type="text" name="begintime" class="form-control input-lg" value="<%= event.BeginTime %>" placeholder="Begin Time"  />                        </div>
                     <div class="col-xs-6 col-md-6">
+                       <label for="city">End Time</label>
                         <input type="text" name="endtime" class="form-control input-lg" value="<%= event.EndTime %>" placeholder="End Time"  />                        </div>
                 </div>
                 <div class="row">
                         <div class="col-xs-6 col-md-6">
+                          <label for="city">Contact First Name</label>
                             <input type="text" name="contactfirstname"  class="form-control input-lg" placeholder="Contact First Name" value=<%= event.ContactFirstName %> maxlength="30"  pattern="[A-Za-z]*" required  />                        </div>
                         <div class="col-xs-6 col-md-6">
+                          <label for="city">Contact Last Name</label>
                             <input type="text" name="contactlastname" value="<%= event.ContactLastName %>" class="form-control input-lg" placeholder="Contact Last Name" maxlength="30"  pattern="[A-Za-z]*" required  />                        </div>
                     </div>
                     
                     
                     <div class="form-group">
+                      <label for="city">Contact Email</label>
                         <input type="email" name="contactemail" value="<%= event.ContactEmailAddress %>" class="form-control input-lg" maxlength="100" placeholder="Contact Email"  />
                         <div class="help-block with-errors"></div>
                     </div>
-                                    
+                    <label for="city">Address</label>                
                     <input type="address1" name="address1" value="<%= event.Address1 %>" maxlength="100" class="form-control input-lg" placeholder="Address" required />
                     <input type="address2" name="address2" value="<%= event.Address2 %>" maxlength="100" class="form-control input-lg" placeholder="Apartment, studio, or floor"  /> 
  
                      <div class="row">
                         <div class="col-xs-6 col-md-6">
                             <label for="city">City</label>
-                            <select name="city" class = "form-control input-lg" placeholder="City" id="city" 
-                                option value="" selected="selected">Please select State first</option> </select>                        </div>
-                        <div class="col-xs-4 col-md-4">
+                            <input type="city" name="city" value="<%= event.City %>" maxlength="20" class="form-control input-lg" placeholder="City" required />
+                          </div>
+                            <div class="col-xs-4 col-md-4">
                             <label for="state">State</label>
-                            <select name="state" class = "form-control input-lg" id="state"
-                                option value="TN" selected="selected">Select state</option>
-                            </select>                       
+                            <input type="state" name="state" value="<%= event.State %>" maxlength="2" class="form-control input-lg" placeholder="State" required />                   
                          </div>
-                        <div class="col-xs-4 col-md-4">
+                        <div class="col-xs-4 col-md-6">
                             <label for="zip">Zip</label>
-                            <select name="zip" class = "form-control input-lg" id="zip"
-                                option value="" selected="selected">Select subject</option>
-                            </select>           
+                            <input type="zip" name="zip" value="<%= event.Zip %>" maxlength="10" class="form-control input-lg" placeholder="Zip" required />                      
          
                         </div>
+                        
                         <a href="/subscribed-volunteers?id=<%= event.Id %>">Volunteers</a>
                     </div>
   
