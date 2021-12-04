@@ -287,11 +287,15 @@ if (process.env.NODE_ENV !== 'production') {
     try {
       console.log("inside event post***");
       //sess = req.session;
-      console.log("in nonprofitorg id :" + sess.nonprofitorgid);
+      //console.log("post in nonprofitorg id :" + sess.nonprofitorgid);
       var nonprofitorgid = 28;
+      console.log("inside event post***");
       const sqlInsert = 'insert into vms."Event" ("Name","Address1","Address2","City","Zip","TotalPositions","BeginTime","EndTime","ContactFirstName","ContactLastName","ContactEmailAddress","Description","nonprofitorgid","State","Date")'+
        'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING "Id"'
-      const event = [req.body.event,req.body.address1, req.body.address2, req.body.city, req.body.zip, req.body.totalpositions, req.body.begintime, req.body.endtime, req.body.contactfirstname, req.body.contactlastname, req.body.contactemail, req.body.description, nonprofitorgid, req.body.state, TO_DATE(req.body.date, 'MM/DD/YYYY')];
+       console.log("inside event post*** sqlInsert" +sqlInsert);
+     
+      const event = [req.body.event,req.body.address1, req.body.address2, req.body.city, req.body.zip, req.body.totalpositions, req.body.begintime, req.body.endtime, req.body.contactfirstname, req.body.contactlastname, req.body.contactemail, req.body.description, nonprofitorgid, req.body.state, req.body.date];
+      console.log("sqlInsert : "+sqlInsert)
       pool.query(sqlInsert, event, (err, result) => {
         if (err) {
           return console.error("Error while creating an event - "+ err.message);
